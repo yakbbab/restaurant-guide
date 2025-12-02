@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>회식 장소 결정 가이드</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+    :root {
+        --color-primary: #2c3e50;
+        --color-secondary: #34495e;
+        --color-accent: #e74c3c;
+        --color-background: #ecf0f1;
+        --color-text: #333;
+        --color-border: #bdc3c7;
+        --color-connector: #95a5a6;
+        --color-result-bg: #e8f6f3;
+        --color-result-border: #1abc9c;
+        --color-question-bg: #fdf2e9;
+        --color-question-border: #e67e22;
+        --border-radius: 12px;
+        --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: var(--color-text);
+        line-height: 1.7;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 600px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+    }
+
+    header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    header h1 .icon {
+        font-size: 2.5rem;
+    }
+
+    header p {
+        font-size: 0.95rem;
+        margin-top: 10px;
+        opacity: 0.95;
+    }
+
+    .content {
+        padding: 40px 30px;
+    }
+
+    .question-card {
+        background: var(--color-question-bg);
+        border: 2px solid var(--color-question-border);
+        border-radius: var(--border-radius);
+        padding: 30px;
+        margin-bottom: 30px;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .question-card h2 {
+        font-size: 1.4rem;
+        color: var(--color-primary);
+        margin: 0 0 10px 0;
+    }
+
+    .question-card p {
+        color: var(--color-secondary);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .option-btn {
+        background: white;
+        border: 2px solid var(--color-border);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: var(--color-primary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: left;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .option-btn:hover {
+        background: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+        transform: translateX(10px);
+    }
+
+    .result-card {
+        background: var(--color-result-bg);
+        border: 3px solid var(--color-result-border);
+        border-radius: var(--border-radius);
+        padding: 30px;
+        animation: slideIn 0.5s ease-out;
+    }
+
+    .result-card h3 {
+        font-size: 1.8rem;
+        color: var(--color-result-border);
+        margin: 0 0 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--color-result-border);
+    }
+
+    .result-card .icon {
+        font-size: 2rem;
+    }
+
+    .result-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .result-card li {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: flex-start;
+        line-height: 1.6;
+    }
+
+    .result-card li::before {
+        content: '✓';
+        color: var(--color-result-border);
+        font-weight: 700;
+        margin-right: 12px;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .result-card strong {
+        color: var(--color-primary);
+    }
+
+    .back-btn {
+        background: var(--color-primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        padding: 15px 30px;
+        font-size: 1.05rem;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 25px;
+        transition: all 0.3s ease;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .back-btn:hover {
+        background: var(--color-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress {
+        background: #e0e0e0;
+        height: 6px;
+        border-radius: 3px;
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        height: 100%;
+        transition: width 0.5s ease;
+    }
+
+    @media (max-width: 640px) {
+        .container {
+            border-radius: 0;
+        }
+
+        header {
+            padding: 30px 15px;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .question-card {
+            padding: 25px 20px;
+        }
+
+        .question-card h2 {
+            font-size: 1.2rem;
+        }
+
+        .option-btn {
+            padding: 18px;
+            font-size: 0.95rem;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1><span class="icon">🍻</span> 회식 장소 결정 가이드</h1>
+        <p>몇 가지 질문에 답하면 최적의 회식 장소를 추천해드립니다!</p>
+    </header>
+
+    <div class="content">
+        <div class="progress">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        <div id="questionContainer"></div>
+    </div>
+</div>
+
+<script>
+const flowchart = {
+    start: {
+        type: 'question',
+        question: 'Q1. 오늘 가장 땡기는 메뉴는 무엇인가요?',
+        description: '회식의 성패를 좌우하는 첫 번째 관문, 메뉴 선택!',
+        progress: 25,
+        options: [
+            { text: 'A. 회식엔 역시 기름진 육류지! (고기파)', next: 'meat' },
+            { text: 'B. 제철 맞은 기름진 맛, 깔끔하게 가자! (방어회파)', next: 'fish' },
+            { text: 'C. 가볍고 호불호 없는 치맥 어때? (치킨파)', next: 'chicken' }
+        ]
+    },
+    meat: {
+        type: 'question',
+        question: 'Q2. 돼지(삼겹살) vs 양(양꼬치)?',
+        description: '육류파의 영원한 난제, 당신의 선택은?',
+        progress: 50,
+        options: [
+            { text: '양꼬치', next: 'result_lamb' },
+            { text: '삼겹살', next: 'pork' }
+        ]
+    },
+    pork: {
+        type: 'question',
+        question: 'Q3. 야외 감성(테라스)이 중요하거나, 걷는 게 제일 싫으신가요?',
+        description: '',
+        progress: 75,
+        options: [
+            { text: 'YES (테라스 & 5분 컷)', next: 'result_yuksanjang' },
+            { text: 'NO (무난한 10분 거리)', next: 'result_kkotpineun' }
+        ]
+    },
+    fish: {
+        type: 'question',
+        question: 'Q4. 연남동의 핫한 분위기를 위해 20분 정도 걸을 수 있나요?',
+        description: '맛과 함께 분위기도 포기할 수 없다면!',
+        progress: 50,
+        options: [
+            { text: 'YES (분위기 중요)', next: 'result_yeonpirang' },
+            { text: 'NO (가까운 게 최고)', next: 'fish_nearby' }
+        ]
+    },
+    fish_nearby: {
+        type: 'question',
+        question: 'Q5. 실패 없는 \'검증된 곳\' vs 감칠맛 터지는 \'숙성회\'?',
+        description: '',
+        progress: 75,
+        options: [
+            { text: '검증된 곳 (선배님 Pick)', next: 'result_donggyohaemul' },
+            { text: '숙성회 & 숲길 산책', next: 'result_waukkeutjip' }
+        ]
+    },
+    chicken: {
+        type: 'question',
+        question: '고민 없이 직진!',
+        description: '치킨은 언제나 정답입니다.',
+        progress: 75,
+        options: [
+            { text: '철인7호치킨으로 고고!', next: 'result_chicken' }
+        ]
+    },
+    result_lamb: {
+        type: 'result',
+        progress: 100,
+        restaurant: {
+            icon: '🐑',
+            name: '항방양육관',
+            details: [
+                '<strong>특징:</strong> 잡내 없이 부드러운 양고기와 칭따오의 완벽한 조화.',
+                '<strong>거리:</strong> 사무실에서 도보 8분',
+                '<strong>추천:</strong> 새로운 맛에 도전하고 싶은 팀에게 적합합니다.'
+            ]
+        }
+    },
+    result_yuksanjang: {
+        type: 'result',
+        progress: 100,
+        restaurant: {
+            icon: '🏞️',
+            name: '육산장',
+            details: [
+                '<strong>특징:</strong> 시원한 야외 테라스석 보유, 압도적인 접근성.',
+                '<strong>거리:</strong> 사무실에서 도보 5분 (최단 거리)',
+                '<strong>추천:</strong> 날씨 좋은 날, 빠른 이동을 선호하는 팀에게 최적입니다.'
+            ]
+        }
+    },
+    result_kkotpineun: {
+        type: 'result',
+        progress: 100,
+        restaurant: {
+            icon: '🏢',
+            name: '꽃피는고기',
+            details: [
+                '<strong>특징:</strong> 쾌적하고 깔끔한 인테리어의 정석 고기집.',
+                '<strong>거리:</strong> 사무실에서 도보 10분',
+                '<strong>추천:</strong> 스탠다드하고 실패 없는 선택을 원할 때 좋습니다.'
+            ]
+        }
+    },
+    result_yeonpirang: {
+        type: 'result',
+        progress: 100,
+        restaurant: {
+            icon: '🌃',
+            name: '연피랑',
+            details: [
+                '<strong>특징:</strong> 트렌디한 연남동 감성을 만끽할 수 있는 핫플레이스.',
+                '<strong>거리:</strong> 사무실에서 도보 20분',
+                '<strong>추천:</strong> 젊은 감각과 활기찬 분위기를 즐기고 싶은 팀에게 추천합니다.'
+            ]
+        }
+    },
+    result_donggyohaemul: {
+        type: 'result',
+        progress: 100,
+        restaurant: {
+            icon: '👍',
+            name: '동교해물',
+            details: [
+                '<strong>특징:</strong> 수현 선배님이 보증하는 믿고 가는 맛집.',
+                '<strong>거리:</strong> 사무실에서 도보 10분',
+                '<strong>추천:</strong> 모험보다는 안정적인 맛과 퀄리티를 중시할 때 최고의 선택입니다.'
+            ]
+        }
+    },
+    result_waukkeutjip: {
+        type: 'result',
+        progress: 100,
+        restaurant: {
+            icon: '🌳',
+            name: '와우끝집',
+            details: [
+                '<strong>특징:</strong> 감칠맛이 일품인 숙성회 전문점, 경의선숲길 인근.',
+                '<strong>거리:</strong> 사무실에서 도보 10분',
+                '<strong>추천:</strong> 식사 후 가벼운 산책을 즐기며 여유를 찾고 싶을 때 좋습니다.'
+            ]
+        }
+    },
+    result_chicken: {
+        type: 'result',
+        progress: 100,
+        restaurant: {
+            icon: '🍗',
+            name: '철인7호치킨',
+            details: [
+                '<strong>특징:</strong> 바삭한 치킨과 시원한 맥주의 클래식한 조합.',
+                '<strong>거리:</strong> 사무실에서 도보 10분 (합정/상수 사이)',
+                '<strong>추천:</strong> 캐주얼하고 부담 없는 분위기에서 즐거운 시간을 보내고 싶을 때 완벽한 장소입니다.'
+            ]
+        }
+    }
+};
+
+let currentStep = 'start';
+
+function updateProgress(percentage) {
+    document.getElementById('progressBar').style.width = percentage + '%';
+}
+
+function renderQuestion(stepKey) {
+    const step = flowchart[stepKey];
+    const container = document.getElementById('questionContainer');
+    
+    updateProgress(step.progress);
+    
+    if (step.type === 'question') {
+        container.innerHTML = `
+            <div class="question-card">
+                <h2>${step.question}</h2>
+                ${step.description ? `<p>${step.description}</p>` : ''}
+            </div>
+            <div class="options">
+                ${step.options.map((option, index) => `
+                    <button class="option-btn" onclick="selectOption('${option.next}')">
+                        ${option.text}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    } else if (step.type === 'result') {
+        const restaurant = step.restaurant;
+        container.innerHTML = `
+            <div class="result-card">
+                <h3><span class="icon">${restaurant.icon}</span> ${restaurant.name}</h3>
+                <ul>
+                    ${restaurant.details.map(detail => `<li>${detail}</li>`).join('')}
+                </ul>
+                <button class="back-btn" onclick="restart()">🔄 처음으로 돌아가기</button>
+            </div>
+        `;
+    }
+}
+
+function selectOption(nextStep) {
+    currentStep = nextStep;
+    renderQuestion(currentStep);
+}
+
+function restart() {
+    currentStep = 'start';
+    renderQuestion(currentStep);
+}
+
+// 초기 렌더링
+renderQuestion(currentStep);
+</script>
+</body>
+</html>
